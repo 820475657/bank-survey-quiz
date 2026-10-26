@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<!-- 锁定缩放，避免 iOS 点击输入框/卡片时自动放大；user-scalable=no 进一步防止微信内置浏览器缩放 -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<title>银行业求职准备度自评问卷（在校大学生版）</title>
+<style>
+  /* ===== 基础 ===== */
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 16px;                 /* 正文字号不小于 16px，防止 iOS 自动缩放 */
+    line-height: 1.55;
+    color: #1f2933;
+    background: #f4f6f9;
+    -webkit-text-size-adjust: 100%;
+  }
+  .view { max-width: 680px; margin: 0 auto; padding: 0 14px 40px; }
+
+  /* ===== 按钮 ===== */
+  .btn {
+    display: block; width: 100%;
+    min-height: 50px;                /* 按钮高度不小于 44px */
+    border: none; border-radius: 12px;
+    font-size: 17px; font-weight: 600;
+    cursor: pointer; transition: background .15s, opacity .15s;
+  }
+  .btn-primary { background: #1565C0; color: #fff; }
+  .btn-primary:active { background: #0d4a94; }
+  .btn-secondary { background: #eef2f7; color: #1565C0; border: 1px solid #c9d6e5; }
+  .btn-secondary:active { background: #e2e8f1; }
+
+  /* ===== 封面 ===== */
+  #cover { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .cover-card { background: #fff; border-radius: 18px; padding: 32px 26px; box-shadow: 0 8px 30px rgba(20,50,90,.10); text-align: center; }
+  .cover-card h1 { font-size: 23px; color: #0d3a73; line-height: 1.4; }
+  .cover-sub { margin-top: 6px; color: #1565C0; font-weight: 600; letter-spacing: 2px; }
+  .cover-desc { margin: 22px 0 28px; color: #4a5568; font-size: 15px; text-align: left; }
+  .cover-desc b { color: #1565C0; }
+
+  /* ===== 答题页头部（吸顶） ===== */
+  .quiz-header {
+    position: sticky; top: 0; z-index: 20;
+    background: #f4f6f9; padding: 10px 0 8px; margin: 0 -14px; padding-left: 14px; padding-right: 14px;
+  }
+  .progress { height: 7px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #1565C0; border-radius: 99px; transition: width .25s; }
+  .counter { margin-top: 6px; font-size: 13px; color: #6b7280; }
+
+  /* ===== 分组标题 ===== */
+  .section-head { margin: 22px 0 6px; font-size: 17px; font-weight: 700; color: #0d3a73; }
+  .section-note { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+
+  /* ===== 题目卡片 ===== */
+  .q-block { background: #fff; border-radius: 14px; padding: 16px; margin: 12px 0; box-shadow: 0 2px 10px rgba(20,50,90,.06); }
+  .q-block.flash { outline: 2px solid #e53e3e; outline-offset: 2px; }
+  .q-title { font-weight: 600; margin-bottom: 12px; }
+  .q-note { font-size: 13px; color: #b45309; margin-bottom: 8px; }
+  .options { display: flex; flex-direction: column; }
+  .option {
+    display: flex; align-items: center; gap: 10px;
+    min-height: 50px;                 /* 选项卡片高度不小于 44px */
+    border: 1.5px solid #d6dce4; border-radius: 11px;
+    padding: 11px 13px; margin: 7px 0; cursor: pointer;
+    background: #fff; transition: border-color .12s, background .12s;
+  }
+  .option.selected { border-color: #1565C0; background: #e8f1fc; }
+  .opt-badge {
+    flex: 0 0 26px; height: 26px; border-radius: 50%;
+    background: #eef2f7; color: #1565C0; font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .option.selected .opt-badge { background: #1565C0; color: #fff; }
+  .opt-text { flex: 1; }
+  .fwarn { display: none; color: #b45309; font-size: 13px; margin-top: 8px; }
+
+  .submit-btn { margin-top: 18px; }
+
+  /* ===== 结果页 ===== */
+  .result-title { text-align: center; color: #0d3a73; font-size: 20px; margin: 18px 0 8px; }
+  .radar-wrap { display: flex; justify-content: center; }
+  #radar { width: 100%; max-width: 340px; height: auto; display: block; }
+  .result-sub { text-align: center; color: #6b7280; font-size: 13px; margin: 6px 0 16px; }
+  .dim-list { background: #fff; border-radius: 14px; padding: 6px 16px; box-shadow: 0 2px 10px rgba(20,50,90,.06); }
+  .dim-row { padding: 13px 0; border-bottom: 1px solid #eef2f7; }
+  .dim-row:last-child { border-bottom: none; }
+  .dim-name { font-weight: 600; }
+  .dim-score { float: right; font-weight: 700; color: #1565C0; }
+  .dim-score span { font-size: 13px; color: #9aa7b4; font-weight: 500; }
+  .dim-fb { display: block; margin-top: 4px; font-size: 14px; color: #4a5568; clear: both; }
+  .total-card { background: #0d3a73; color: #fff; border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .total-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 17px; font-weight: 700; }
+  .total-score span { font-size: 13px; opacity: .8; font-weight: 500; }
+  .total-fb { margin-top: 8px; font-size: 14px; opacity: .92; }
+  .ideal-note { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 12px; padding: 13px 15px; margin: 14px 0; font-size: 14px; }
+  .save-hint { text-align: center; color: #6b7280; font-size: 13px; margin: 16px 0; }
+
+  /* ===== 二维码展示模式 ===== */
+  #qr { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .qr-card { background: #fff; border-radius: 18px; padding: 30px 24px; box-shadow: 0 8px 30px rgba(20,50,90,.10); text-align: center; width: 100%; }
+  .qr-card h2 { color: #0d3a73; font-size: 21px; }
+  .qr-sub { color: #4a5568; font-size: 14px; margin: 10px 0 18px; }
+  .qr-link {
+    background: #f1f5fb; border: 1px dashed #9cb3d4; border-radius: 12px;
+    padding: 16px; font-size: 15px; color: #1565C0; word-break: break-all;
+    user-select: text; margin-bottom: 16px; line-height: 1.5;
+  }
+  .qr-tip { color: #6b7280; font-size: 13px; margin-top: 14px; }
+  .warn-text { color: #b45309; font-size: 15px; line-height: 1.7; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 18px; }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%) translateY(20px);
+    background: rgba(31,41,51,.92); color: #fff; padding: 11px 18px; border-radius: 10px;
+    font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s;
+    z-index: 50; max-width: 80%; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ============ 一、封面 / 说明页 ============ -->
+<div id="cover" class="view">
+  <div class="cover-card">
+    <h1>银行业求职准备度自评问卷</h1>
+    <div class="cover-sub">在校大学生版</div>
+    <p class="cover-desc">
+      匿名自评，请按最近一学年真实情况作答；结果仅用于自我训练，<b>不作为评价依据</b>；
+      提交后显示五维能力雷达图。本页<b>不收集姓名、学号、手机号</b>，作答数据仅保留在你本机浏览器内存中。
+    </p>
+    <button class="btn btn-primary" id="startBtn">开始答题</button>
+  </div>
+</div>
+
+<!-- ============ 二、答题页 ============ -->
+<div id="quiz" class="view" style="display:none;">
+  <div class="quiz-header" id="quizHeader">
+    <div class="progress"><div class="progress-fill" id="progFill"></div></div>
+    <div class="counter" id="counter">第 1 / 17 题</div>
+  </div>
+  <div class="quiz-body">
+    <div id="questions"></div>
+    <button class="btn btn-primary submit-btn" id="submitBtn">提交并查看结果</button>
+  </div>
+</div>
+
+<!-- ============ 三、结果页（由 JS 动态生成） ============ -->
+<div id="result" class="view" style="display:none;"></div>
+
+<!-- ============ 四、二维码展示模式（?mode=qr） ============ -->
+<div id="qr" class="view" style="display:none;">
+  <div class="qr-card">
+    <h2>扫码答题入口</h2>
+    <p class="qr-sub">将下方链接生成二维码后投屏或打印，手机扫码即可打开答题页。</p>
+    <div id="qrContent">
+      <div class="qr-link" id="qrLink"></div>
+      <button class="btn btn-primary" id="copyBtn">复制链接</button>
+      <p class="qr-tip">可用任意免费二维码工具（如草料二维码）把该链接生成二维码，再投屏 / 打印。</p>
+    </div>
+    <div id="qrWarn" style="display:none;">
+      <p class="warn-text">请先将 index.html 部署到 http(s) 地址，再用手机扫码；本地文件无法被手机直接访问。</p>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* =========================================================================
+ *  银行业求职准备度自评问卷 —— 单文件离线应用
+ *  设计要点（对应验收标准）：
+ *   - 无后端、无第三方问卷平台、无构建步骤，全部内联。
+ *   - 答题数据只在浏览器内存（answers 对象）计算，不发送任何网络请求。
+ *   - 雷达图用原生 Canvas 绘制，不依赖图表库。
+ *   - 计分规则集中在 QUESTIONS 数据与下方“计分函数”，方便维护。
+ * ========================================================================= */
+
+/* 五个维度（固定顺序，结果页与雷达图均按此顺序） */
+const DIMENSIONS = [
+  { key: 'd1', name: '沟通表达与服务意识' },
+  { key: 'd2', name: '办公软件与数据整理能力' },
+  { key: 'd3', name: '基础金融常识与商业理解' },
+  { key: 'd4', name: '抗压执行与团队协作' },
+  { key: 'd5', name: '诚信合规与职业习惯' },
+];
+
+/* 题目与计分表（分值 s 只用于后台计算，页面上绝不显示）
+ * type: single=单选 / multi=多选
+ * dim: 所属维度（null 表示检测题，不计分）
+ * options[].k = 选项标识, .t = 选项文字, .s = 该题分值
+ * 每个维度 3 题，维度分 = 3 题得分之和（最高 10 分）；总分 = 5 个维度分之和（最高 50 分）
+ */
+const QUESTIONS = [
+  /* —— 维度一：沟通表达与服务意识（第1—3题，满分10） —— */
+  { id: 'q1', dim: 'd1', type: 'single',
+    text: '最近一次小组讨论或课堂发言中，你讲完一个观点后，发现别人没听懂，你更接近哪种做法？',
+    options: [
+      { k: 'A', t: '算了，不继续说了', s: 0 },
+      { k: 'B', t: '把原话重复一遍', s: 1 },
+      { k: 'C', t: '换个说法再讲一遍', s: 2 },
+      { k: 'D', t: '先问对方哪里没听懂，再举例说明', s: 3 },
+    ] },
+  { id: 'q2', dim: 'd1', type: 'single',
+    text: '过去一学期，你在课堂、社团、志愿服务或兼职中，主动向不熟悉的人说明流程、规则或注意事项的次数大约是？',
+    options: [
+      { k: 'A', t: '没有', s: 0 },
+      { k: 'B', t: '1—2次', s: 1 },
+      { k: 'C', t: '3—5次', s: 2 },
+      { k: 'D', t: '6次以上', s: 3 },
+    ] },
+  { id: 'q3', dim: 'd1', type: 'single',
+    text: '当同学、老师或服务对象表达不满时，你更常见的反应是？',
+    options: [
+      { k: 'A', t: '先解释自己没错，或与对方争辩', s: 0 },
+      { k: 'B', t: '心里不舒服，但回避不说', s: 1 },
+      { k: 'C', t: '先听完，再解释或处理', s: 2 },
+      { k: 'D', t: '先复述确认对方诉求，再回应', s: 3 },
+      { k: 'E', t: '不仅确认和解决，还会跟进后续是否满意', s: 4 },
+      { k: 'F', t: '没遇到过类似情况', s: 2 }, // 标记“无经历”，仅计分用
+    ] },
+
+  /* —— 维度二：办公软件与数据整理能力（第4—6题，满分10） —— */
+  { id: 'q4', dim: 'd2', type: 'single',
+    text: '给你一份100行报名表，要找出重复手机号和缺失项，你第一步更可能怎么做？',
+    options: [
+      { k: 'A', t: '手工逐行看', s: 0 },
+      { k: 'B', t: '先问别人怎么做', s: 1 },
+      { k: 'C', t: '用排序、筛选或条件格式辅助', s: 2 },
+      { k: 'D', t: '用公式、透视表或数据工具处理', s: 3 },
+    ] },
+  { id: 'q5', dim: 'd2', type: 'multi',
+    text: '过去一学期，你实际做过以下哪些操作？',
+    options: [
+      { k: 'A', t: '用Excel筛选、排序', s: 1 },
+      { k: 'B', t: '用SUM、AVERAGE等基础公式', s: 1 },
+      { k: 'C', t: '用条件格式或删除重复项查重', s: 1 },
+      { k: 'D', t: '用透视表做统计', s: 1 },
+      { k: 'E', t: '用图表呈现数据', s: 1 },
+      { k: 'F', t: '以上都没做过', s: 0 },
+    ] },
+  { id: 'q6', dim: 'd2', type: 'single',
+    text: '提交表格、PPT或材料前，你通常的实际做法是？',
+    options: [
+      { k: 'A', t: '基本不检查', s: 0 },
+      { k: 'B', t: '只看一眼', s: 1 },
+      { k: 'C', t: '检查错别字和数字', s: 2 },
+      { k: 'D', t: '按清单检查，并请人复核', s: 3 },
+      { k: 'E', t: '还会保存版本、备份并记录修改', s: 4 },
+    ] },
+
+  /* —— 维度三：基础金融常识与商业理解（第7—9题，满分10） —— */
+  { id: 'q7', dim: 'd3', type: 'single',
+    text: '银行传统存贷业务的主要收入来源更接近？',
+    options: [
+      { k: 'A', t: '存款利息', s: 0 },
+      { k: 'B', t: '贷款利息与存款利息之间的差额', s: 3 },
+      { k: 'C', t: '信用卡年费', s: 1 },
+      { k: 'D', t: '不清楚', s: 0 },
+    ] },
+  { id: 'q8', dim: 'd3', type: 'single',
+    text: '降准通常更可能意味着？',
+    options: [
+      { k: 'A', t: '银行可贷资金减少', s: 0 },
+      { k: 'B', t: '银行可贷资金增加', s: 3 },
+      { k: 'C', t: '只影响汇率', s: 1 },
+      { k: 'D', t: '不清楚', s: 0 },
+    ] },
+  { id: 'q9', dim: 'd3', type: 'single',
+    text: '一位客户有短期闲置资金，希望随时可用、风险较低，以下哪类产品更匹配？',
+    options: [
+      { k: 'A', t: '股票', s: 0 },
+      { k: 'B', t: '货币基金或现金管理类理财', s: 4 },
+      { k: 'C', t: '三年期封闭式理财', s: 1 },
+      { k: 'D', t: '不清楚', s: 0 },
+    ] },
+
+  /* —— 维度四：抗压执行与团队协作（第10—12题，满分10） —— */
+  { id: 'q10', dim: 'd4', type: 'single',
+    text: '过去一学期，任务多、时间紧时，你出现“先刷手机或拖到截止前才赶”的频率是？',
+    options: [
+      { k: 'A', t: '几乎每次', s: 0 },
+      { k: 'B', t: '经常', s: 1 },
+      { k: 'C', t: '偶尔', s: 2 },
+      { k: 'D', t: '很少', s: 3 },
+    ] },
+  { id: 'q11', dim: 'd4', type: 'single',
+    text: '团队合作中遇到分工不清或有人掉链子，你最近一次更接近？',
+    options: [
+      { k: 'A', t: '等别人处理', s: 0 },
+      { k: 'B', t: '只做好自己的部分', s: 1 },
+      { k: 'C', t: '主动沟通提醒', s: 2 },
+      { k: 'D', t: '主动协调、补位并推动完成', s: 3 },
+      { k: 'E', t: '没遇到过', s: 2 }, // 标记“无经历”，仅计分用
+    ] },
+  { id: 'q12', dim: 'd4', type: 'single',
+    text: '你是否有过持续3个月以上的兼职、实习或社团项目经历？',
+    options: [
+      { k: 'A', t: '没有', s: 0 },
+      { k: 'B', t: '有，但少于1个月', s: 1 },
+      { k: 'C', t: '持续1—3个月', s: 2 },
+      { k: 'D', t: '持续3—6个月', s: 3 },
+      { k: 'E', t: '持续6个月以上，并能说出具体收获和不足', s: 4 },
+    ] },
+
+  /* —— 维度五：诚信合规与职业习惯（第13—15题，满分10） —— */
+  { id: 'q13', dim: 'd5', type: 'single',
+    text: '写简历或填表时，遇到自己不熟悉、但看起来加分的经历，你更接近？',
+    options: [
+      { k: 'A', t: '先写上去再说', s: 0 },
+      { k: 'B', t: '尽量美化，模糊处理', s: 1 },
+      { k: 'C', t: '只写真实内容', s: 2 },
+      { k: 'D', t: '真实具体，并准备面试追问', s: 3 },
+    ] },
+  { id: 'q14', dim: 'd5', type: 'single',
+    text: '过去一年，你是否曾把他人手机号、身份证号、名单等转发到无关群，或随意保存？',
+    options: [
+      { k: 'A', t: '有过多次', s: 0 },
+      { k: 'B', t: '有过1—2次', s: 1 },
+      { k: 'C', t: '没有，但平时没特别注意', s: 2 },
+      { k: 'D', t: '没有，且会最小范围使用并及时删除', s: 3 },
+      { k: 'E', t: '没有，还会提醒同伴注意保密', s: 4 },
+    ] },
+  { id: 'q15', dim: 'd5', type: 'single',
+    text: '过去一学期，你迟到、忘交材料或错过截止时间的次数大约是？',
+    options: [
+      { k: 'A', t: '5次以上', s: 0 },
+      { k: 'B', t: '3—4次', s: 1 },
+      { k: 'C', t: '1—2次', s: 2 },
+      { k: 'D', t: '0次', s: 3 },
+    ] },
+
+  /* —— 检测题（不参与任何计分，仅用于结果可信度提示） —— */
+  { id: 's1', dim: null, detect: true, type: 'single',
+    text: '我从未迟到过。',
+    options: [
+      { k: '完全不符合', t: '完全不符合', s: 0 },
+      { k: '比较不符合', t: '比较不符合', s: 0 },
+      { k: '不确定', t: '不确定', s: 0 },
+      { k: '比较符合', t: '比较符合', s: 0 },
+      { k: '完全符合', t: '完全符合', s: 0 },
+    ] },
+  { id: 's2', dim: null, detect: true, type: 'single',
+    text: '我从未在团队中推卸过责任。',
+    options: [
+      { k: '完全不符合', t: '完全不符合', s: 0 },
+      { k: '比较不符合', t: '比较不符合', s: 0 },
+      { k: '不确定', t: '不确定', s: 0 },
+      { k: '比较符合', t: '比较符合', s: 0 },
+      { k: '完全符合', t: '完全符合', s: 0 },
+    ] },
+];
+
+/* ===================== 计分函数 ===================== */
+let answers = {};           // 内存中的作答数据，不发送任何网络请求
+let lastScores = [];        // 供 resize 时重绘雷达图
+
+function getQScore(q, ans) {
+  if (q.type === 'multi') {
+    // 第5题：A—E 每选中 1 项计 1 分，最多 3 分；F 计 0 分。
+    const arr = Array.isArray(ans) ? ans : [];
+    const aToE = arr.filter(k => ['A', 'B', 'C', 'D', 'E'].includes(k));
+    return Math.min(3, aToE.length);
+  }
+  const opt = q.options.find(o => o.k === ans);
+  return opt ? opt.s : 0;
+}
+
+function dimScore(dimKey) {
+  const qs = QUESTIONS.filter(q => q.dim === dimKey && !q.detect);
+  return qs.reduce((sum, q) => sum + getQScore(q, answers[q.id]), 0);
+}
+
+function isAnswered(qid) {
+  const q = QUESTIONS.find(x => x.id === qid);
+  if (q.type === 'multi') return Array.isArray(answers[qid]) && answers[qid].length > 0;
+  return !!answers[qid];
+}
+
+/* 维度区间反馈（0—10） */
+function dimFeedback(s) {
+  if (s <= 3) return '建议先积累具体经历';
+  if (s <= 6) return '已有基础，建议在实习 / 活动中刻意练习';
+  if (s <= 8) return '较强，可整理成面试案例';
+  return '优势项，准备具体事例和结果';
+}
+
+/* 总分区间反馈（0—50） */
+function totalFeedback(t) {
+  if (t <= 20) return '起步期，先补沟通、办公软件和一段持续经历';
+  if (t <= 30) return '基础期，优先补最弱 1—2 项';
+  if (t <= 40) return '较充分，开始打磨简历和面试故事';
+  return '优势较明显，重点把经历讲成“情境—行动—结果—复盘”';
+}
+
+/* ===================== 渲染答题页 ===================== */
+const quizEl = document.getElementById('questions');
+
+function renderQuestion(q) {
+  const badge = q.detect ? '' : `<span class="opt-badge">${q.k}</span>`;
+  const opts = q.options.map(o => `
+    <div class="option" data-qid="${q.id}" data-opt="${o.k}">
+      ${badge}
+      <span class="opt-text">${o.t}</span>
+    </div>`).join('');
+  const note = q.type === 'multi' ? `<div class="q-note">可多选，最多计 3 项</div>` : '';
+  const fw = q.id === 'q5' ? `<div class="fwarn">若以上都没做过，请只选 F</div>` : '';
+  return `<div class="q-block" data-id="${q.id}" data-answered="0">
+    <div class="q-title">${q.text}</div>
+    ${note}
+    <div class="options">${opts}</div>
+    ${fw}
+  </div>`;
+}
+
+function renderQuiz() {
+  const nums = ['一', '二', '三', '四', '五'];
+  let prevDim = null;
+  let html = '';
+  QUESTIONS.forEach(q => {
+    if (q.detect) {
+      if (prevDim !== '__detect') {
+        html += `<div class="section-head">检测题</div>
+                 <div class="section-note">以下两题仅用于结果可信度提示，不计分（必答）</div>`;
+        prevDim = '__detect';
+      }
+    } else {
+      if (q.dim !== prevDim) {
+        const di = DIMENSIONS.findIndex(d => d.key === q.dim);
+        html += `<div class="section-head">${nums[di]}、${DIMENSIONS[di].name}</div>
+                 <div class="section-note">本组题目必答</div>`;
+        prevDim = q.dim;
+      }
+    }
+    html += renderQuestion(q);
+  });
+  quizEl.innerHTML = html;
+}
+
+/* ===================== 交互逻辑 ===================== */
+quizEl.addEventListener('click', e => {
+  const opt = e.target.closest('.option');
+  if (!opt) return;
+  const qid = opt.dataset.qid;
+  const oval = opt.dataset.opt;
+  const q = QUESTIONS.find(x => x.id === qid);
+  const block = opt.closest('.q-block');
+
+  if (q.type === 'multi') {
+    let arr = answers[qid] ? answers[qid].slice() : [];
+    if (arr.includes(oval)) arr = arr.filter(v => v !== oval);
+    else arr.push(oval);
+    answers[qid] = arr;
+    updateMultiUI(qid);
+    checkFWarning(qid);
+  } else {
+    answers[qid] = oval;
+    block.querySelectorAll('.option').forEach(o =>
+      o.classList.toggle('selected', o.dataset.opt === oval));
+  }
+  block.dataset.answered = isAnswered(qid) ? '1' : '0';
+  updateProgress();
+  if (q.type !== 'multi') autoAdvance(block);
+});
+
+function updateMultiUI(qid) {
+  const block = quizEl.querySelector(`.q-block[data-id="${qid}"]`);
+  const arr = answers[qid] || [];
+  block.querySelectorAll('.option').forEach(o =>
+    o.classList.toggle('selected', arr.includes(o.dataset.opt)));
+}
+
+function checkFWarning(qid) {
+  if (qid !== 'q5') return;
+  const block = quizEl.querySelector('.q-block[data-id="q5"]');
+  const note = block.querySelector('.fwarn');
+  const arr = answers.q5 || [];
+  const hasF = arr.includes('F');
+  const hasOther = arr.some(k => ['A', 'B', 'C', 'D', 'E'].includes(k));
+  note.style.display = (hasF && hasOther) ? 'block' : 'none';
+}
+
+function updateProgress() {
+  const blocks = [...quizEl.querySelectorAll('.q-block')];
+  const answered = blocks.filter(b => b.dataset.answered === '1').length;
+  document.getElementById('progFill').style.width = (answered / blocks.length * 100) + '%';
+  const headerH = document.getElementById('quizHeader').offsetHeight;
+  let cur = 1;
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i].getBoundingClientRect().top <= headerH + 40) cur = i + 1;
+  }
+  document.getElementById('counter').textContent = `第 ${cur} / ${blocks.length} 题`;
+}
+
+function scrollToBlock(block, extra) {
+  const headerH = document.getElementById('quizHeader').offsetHeight;
+  const y = block.getBoundingClientRect().top + window.scrollY - headerH - (extra || 14);
+  window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+}
+
+function autoAdvance(block) {
+  const blocks = [...quizEl.querySelectorAll('.q-block')];
+  const i = blocks.indexOf(block);
+  for (let j = i + 1; j < blocks.length; j++) {
+    if (blocks[j].dataset.answered !== '1') { scrollToBlock(blocks[j]); break; }
+  }
+}
+
+function flashBlock(block) {
+  block.classList.add('flash');
+  setTimeout(() => block.classList.remove('flash'), 1300);
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* 提交：未答完定位到第一道未答题并提示 */
+function submit() {
+  const first = QUESTIONS.find(q => !isAnswered(q.id));
+  if (first) {
+    const block = quizEl.querySelector(`.q-block[data-id="${first.id}"]`);
+    scrollToBlock(block, 10);
+    flashBlock(block);
+    toast('请完成所有题目后再提交');
+    return;
+  }
+  showResult();
+}
+
+/* ===================== 结果页 ===================== */
+function showResult() {
+  const dims = DIMENSIONS.map(d => {
+    const sc = dimScore(d.key);
+    return { name: d.name, score: sc, fb: dimFeedback(sc) };
+  });
+  const total = dims.reduce((a, b) => a + b.score, 0);
+
+  let html = `<h2 class="result-title">你的五维能力雷达图</h2>
+    <div class="radar-wrap"><canvas id="radar"></canvas></div>
+    <p class="result-sub">各维度满分 10 分 · 总分满分 50 分</p>
+    <div class="dim-list">`;
+  dims.forEach(d => {
+    html += `<div class="dim-row">
+      <span class="dim-name">${d.name}</span>
+      <span class="dim-score">${d.score} <span>/ 10</span></span>
+      <span class="dim-fb">${d.fb}</span>
+    </div>`;
+  });
+  html += `</div>
+    <div class="total-card">
+      <div class="total-row"><span>总分</span><span class="total-score">${total} <span>/ 50</span></span></div>
+      <div class="total-fb">${totalFeedback(total)}</div>
+    </div>`;
+
+  // 检测题提示：S1、S2 均“完全符合”，且第15题“0次”、第10题“很少” → 温和提示（不判定作假）
+  const ideal = answers.s1 === '完全符合' && answers.s2 === '完全符合'
+             && answers.q15 === 'D' && answers.q10 === 'D';
+  if (ideal) {
+    html += `<div class="ideal-note">你的作答可能偏理想化，建议用具体经历复核一下。</div>`;
+  }
+
+  html += `<p class="save-hint">可截图保存结果（结果仅保存在你本机，不会上传）。</p>
+    <button class="btn btn-secondary" id="restartBtn">重新作答</button>`;
+
+  document.getElementById('result').innerHTML = html;
+  switchView('result');
+  window.scrollTo({ top: 0 });
+
+  const canvas = document.getElementById('radar');
+  lastScores = dims.map(d => d.score);
+  // 等元素可见后再绘制，确保 canvas 有正确宽度
+  requestAnimationFrame(() => drawRadar(canvas, lastScores));
+  document.getElementById('restartBtn').onclick = restart;
+}
+
+function restart() {
+  answers = {};
+  quizEl.querySelectorAll('.option.selected').forEach(o => o.classList.remove('selected'));
+  quizEl.querySelectorAll('.q-block').forEach(b => { b.dataset.answered = '0'; });
+  quizEl.querySelectorAll('.fwarn').forEach(n => n.style.display = 'none');
+  updateProgress();
+  switchView('quiz');
+  window.scrollTo({ top: 0 });
+}
+
+/* ===================== 雷达图（原生 Canvas，五轴 0—10） ===================== */
+function wrapLabel(text, max) {
+  const lines = [];
+  for (let i = 0; i < text.length; i += max) lines.push(text.slice(i, i + max));
+  return lines;
+}
+
+function drawRadar(canvas, scores) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 320;
+  const size = cssW;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.height = size + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, size, size);
+
+  const cx = size / 2, cy = size / 2;
+  const maxR = size / 2 - 64;
+  const N = 5;
+  const labels = DIMENSIONS.map(d => wrapLabel(d.name, 5));
+
+  // 网格环（2/4/6/8/10）
+  for (let lvl = 2; lvl <= 10; lvl += 2) {
+    const r = maxR * (lvl / 10);
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const a = -Math.PI / 2 + i * 2 * Math.PI / N;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = lvl === 10 ? '#9fb3c8' : '#dbe3ec';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 刻度数字（沿正上方轴）
+  ctx.fillStyle = '#9aa7b4';
+  ctx.font = '9px sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  for (let lvl = 2; lvl <= 10; lvl += 2) {
+    const r = maxR * (lvl / 10);
+    ctx.fillText(lvl, cx + 4, cy - r);
+  }
+
+  // 轴线
+  ctx.strokeStyle = '#c7d2dd';
+  for (let i = 0; i < N; i++) {
+    const a = -Math.PI / 2 + i * 2 * Math.PI / N;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + maxR * Math.cos(a), cy + maxR * Math.sin(a));
+    ctx.stroke();
+  }
+
+  // 数据多边形
+  const pts = scores.map((s, i) => {
+    const a = -Math.PI / 2 + i * 2 * Math.PI / N;
+    const r = maxR * (Math.max(0, Math.min(10, s)) / 10);
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  });
+  ctx.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(21,101,192,0.18)';
+  ctx.fill();
+  ctx.strokeStyle = '#1565C0';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  pts.forEach(p => {
+    ctx.beginPath(); ctx.arc(p[0], p[1], 3, 0, 2 * Math.PI);
+    ctx.fillStyle = '#1565C0'; ctx.fill();
+  });
+
+  // 维度标签（可换行）
+  ctx.fillStyle = '#33424f';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  labels.forEach((lines, i) => {
+    const a = -Math.PI / 2 + i * 2 * Math.PI / N;
+    const lx = cx + (maxR + 34) * Math.cos(a);
+    const ly = cy + (maxR + 34) * Math.sin(a);
+    const lineH = 13;
+    lines.forEach((ln, li) => {
+      const y = ly + (li - (lines.length - 1) / 2) * lineH;
+      ctx.fillText(ln, lx, y);
+    });
+  });
+}
+
+/* ===================== 二维码展示模式（?mode=qr） ===================== */
+function initQR() {
+  const isFile = location.protocol === 'file:';
+  // 答题链接 = 当前 URL 去掉 mode=qr 参数
+  const u = new URL(location.href);
+  u.searchParams.delete('mode');
+  const link = u.href;
+
+  if (isFile) {
+    document.getElementById('qrContent').style.display = 'none';
+    document.getElementById('qrWarn').style.display = 'block';
+    return;
+  }
+  document.getElementById('qrLink').textContent = link;
+  document.getElementById('copyBtn').onclick = () => {
+    copyText(link)
+      .then(() => toast('链接已复制'))
+      .catch(() => toast('复制失败，请长按链接手动复制'));
+  };
+}
+
+/* 兼容非安全上下文（http）的复制兜底 */
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((res, rej) => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok ? res() : rej();
+    } catch (e) { rej(e); }
+  });
+}
+
+/* ===================== 视图切换 & 初始化 ===================== */
+function switchView(name) {
+  ['cover', 'quiz', 'result', 'qr'].forEach(v => {
+    document.getElementById(v).style.display = (v === name) ? 'block' : 'none';
+  });
+}
+
+document.getElementById('startBtn').onclick = () => {
+  switchView('quiz');
+  updateProgress();
+  window.scrollTo({ top: 0 });
+};
+document.getElementById('submitBtn').onclick = submit;
+
+window.addEventListener('scroll', () => {
+  if (document.getElementById('quiz').style.display !== 'none') updateProgress();
+});
+window.addEventListener('resize', () => {
+  if (document.getElementById('result').style.display !== 'none') {
+    const c = document.getElementById('radar');
+    if (c) drawRadar(c, lastScores);
+  }
+});
+
+// 初始化
+renderQuiz();
+const params = new URLSearchParams(location.search);
+if (params.get('mode') === 'qr') {
+  initQR();
+  switchView('qr');
+} else {
+  switchView('cover');
+}
+</script>
+</body>
+</html>
