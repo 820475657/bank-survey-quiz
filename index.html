@@ -228,13 +228,12 @@ const QUESTIONS = [
       { k: 'D', t: '使用本地部署AI进行检查，确保数据安全且核对无误后，再进行修正', s: 3 },
     ] },
   { id: 'q5', dim: 'd2', type: 'multi',
-    text: '过去一学期，你用过以下哪些方式借助 AI 或工具提升重复性工作效率？（多选，最多计 3 项）',
+    text: '过去一学期，你用过以下哪些方式借助 AI 工具提升重复性工作效率？（多选，最多选 3 项）',
     options: [
       { k: 'A', t: '用 AI 帮写 / 检查公式或代码', s: 1 },
       { k: 'B', t: '用 AI 批量整理、归类或提取信息', s: 1 },
-      { k: 'C', t: '用模板 / 宏 / 自动化脚本减少手工重复', s: 1 },
-      { k: 'D', t: '用 AI 生成图表或数据摘要', s: 1 },
-      { k: 'E', t: '基本靠手工，没用过 AI / 工具提效', s: 0 },
+      { k: 'C', t: '用 AI 生成图表或数据摘要', s: 1 },
+      { k: 'D', t: '基本靠手工，没用过 AI 工具提效', s: 0 },
     ] },
   { id: 'q6', dim: 'd2', type: 'single',
     text: '提交表格、报表或材料前，你通常的做法是？',
@@ -335,10 +334,10 @@ let lastScores = [];        // 供 resize 时重绘雷达图
 
 function getQScore(q, ans) {
   if (q.type === 'multi') {
-    // q5（多选）：A—D 每选中 1 项计 1 分，最多 3 分；E（基本靠手工、没用过 AI/工具）计 0 分且与 A—D 互斥
+    // q5（多选）：A—C 每选中 1 项计 1 分，最多 3 分；D（基本靠手工、没用过 AI 工具）计 0 分且与 A—C 互斥
     const arr = Array.isArray(ans) ? ans : [];
-    const aToD = arr.filter(k => ['A', 'B', 'C', 'D'].includes(k));
-    return Math.min(3, aToD.length);
+    const aToC = arr.filter(k => ['A', 'B', 'C'].includes(k));
+    return Math.min(3, aToC.length);
   }
   const opt = q.options.find(o => o.k === ans);
   return opt ? opt.s : 0;
@@ -364,8 +363,8 @@ function renderQuestion(q) {
       ${q.detect ? '' : `<span class="opt-badge">${o.k}</span>`}
       <span class="opt-text">${o.t}</span>
     </div>`).join('');
-  const note = q.type === 'multi' ? `<div class="q-note">可多选，最多计 3 项</div>` : '';
-  const fw = q.id === 'q5' ? `<div class="fwarn">若基本靠手工、没用过 AI / 工具提效，请只选 E</div>` : '';
+  const note = q.type === 'multi' ? `<div class="q-note">可多选，最多选 3 项</div>` : '';
+  const fw = q.id === 'q5' ? `<div class="fwarn">选项 D 不可与其他选项同时选择</div>` : '';
   return `<div class="q-block" data-id="${q.id}" data-answered="0">
     <div class="q-title">${q.text}</div>
     ${note}
@@ -407,7 +406,7 @@ quizEl.addEventListener('click', e => {
     else arr.push(oval);
     answers[qid] = arr;
     updateMultiUI(qid);
-    checkFWarning(qid);
+    checkDWarning(qid);
   } else {
     answers[qid] = oval;
     block.querySelectorAll('.option').forEach(o =>
@@ -425,14 +424,14 @@ function updateMultiUI(qid) {
     o.classList.toggle('selected', arr.includes(o.dataset.opt)));
 }
 
-function checkFWarning(qid) {
+function checkDWarning(qid) {
   if (qid !== 'q5') return;
   const block = quizEl.querySelector('.q-block[data-id="q5"]');
   const note = block.querySelector('.fwarn');
   const arr = answers.q5 || [];
-  const hasE = arr.includes('E');
-  const hasOther = arr.some(k => ['A', 'B', 'C', 'D'].includes(k));
-  note.style.display = (hasE && hasOther) ? 'block' : 'none';
+  const hasD = arr.includes('D');
+  const hasOther = arr.some(k => ['A', 'B', 'C'].includes(k));
+  note.style.display = (hasD && hasOther) ? 'block' : 'none';
 }
 
 /* 进度条与"第 X / N 题"必须同源：都按当前可视题目位置计算，
@@ -493,13 +492,13 @@ function submit() {
     toast('请完成所有题目后再提交');
     return;
   }
-  // 第5题：F 与其他选项互斥，同时存在则必须修改后方可提交
+  // 第5题：D 与其他选项互斥，同时存在则必须修改后方可提交
   const q5 = answers.q5 || [];
-  if (q5.includes('E') && q5.some(k => ['A', 'B', 'C', 'D'].includes(k))) {
+  if (q5.includes('D') && q5.some(k => ['A', 'B', 'C'].includes(k))) {
     const block = quizEl.querySelector('.q-block[data-id="q5"]');
     scrollToBlock(block, 10);
     flashBlock(block);
-    toast('第5题不能既选“F”又选其他选项，请修改后再提交');
+    toast('第5题选项 D 不可与其他选项同时选择，请修改后再提交');
     return;
   }
   showResult();
